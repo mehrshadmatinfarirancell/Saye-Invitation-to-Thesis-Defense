@@ -3,111 +3,402 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Invitation to Thesis Defense</title>
+  <title>Biotech Thesis Defense Invitation</title>
   <style>
+    /* Biotech Theme Colors & Fonts */
     body {
-      background-color: #e9ecef; /* Soft background to make the letter pop */
-      font-family: 'Georgia', serif; /* Classic serif typography */
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
+      background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
       margin: 0;
-      padding: 20px;
+      padding: 0;
+      display: flex;
+      min-height: 100vh;
+      overflow-x: hidden;
     }
+
+    /* Envelope & Animation Wrapper */
     .envelope-wrapper {
-      position: relative;
       width: 100%;
-      max-width: 650px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      transition: opacity 0.3s ease;
     }
-    .letter {
-      background: #ffffff;
-      padding: 50px 40px 40px;
-      border-radius: 4px;
-      box-shadow: 0 15px 35px rgba(0,0,0,0.1), 0 5px 15px rgba(0,0,0,0.05);
+
+    /* Layout shift for reading the expanded letter */
+    .envelope-wrapper.fullscreen {
+      align-items: flex-start;
+      padding-top: 5vh;
+      padding-bottom: 5vh;
+    }
+
+    .envelope {
+      width: 320px;
+      height: 220px;
+      background: #4caf50;
       position: relative;
-      border: 1px solid #eaeaea;
+      cursor: pointer;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
     }
-    /* Wax seal design element */
-    .wax-seal {
-      width: 65px;
-      height: 65px;
-      background: radial-gradient(circle, #a11c1c, #6b0c0c);
-      border-radius: 50%;
+
+    .flap {
       position: absolute;
-      top: -32px;
-      left: 50%;
-      transform: translateX(-50%);
-      box-shadow: inset 0 0 10px rgba(0,0,0,0.4), 0 4px 8px rgba(0,0,0,0.2);
+      width: 0;
+      height: 0;
+    }
+
+    /* Envelope structural flaps */
+    .top-flap {
+      top: 0; left: 0;
+      border-left: 160px solid transparent;
+      border-right: 160px solid transparent;
+      border-top: 125px solid #2e7d32;
+      z-index: 4;
+      transform-origin: top;
+      transition: transform 0.6s ease-in-out, z-index 0s 0.3s;
+    }
+    .bottom-flap {
+      bottom: 0; left: 0;
+      border-left: 160px solid transparent;
+      border-right: 160px solid transparent;
+      border-bottom: 125px solid #43a047;
+      z-index: 3;
+    }
+    .left-flap {
+      top: 0; left: 0;
+      border-top: 110px solid transparent;
+      border-bottom: 110px solid transparent;
+      border-left: 160px solid #388e3c;
+      z-index: 3;
+    }
+    .right-flap {
+      top: 0; right: 0;
+      border-top: 110px solid transparent;
+      border-bottom: 110px solid transparent;
+      border-right: 160px solid #388e3c;
+      z-index: 3;
+    }
+
+    /* Biotech Seal */
+    .seal {
+      position: absolute;
+      top: 125px; left: 160px;
+      transform: translate(-50%, -50%);
+      width: 45px; height: 45px;
+      background: #1b5e20;
+      border-radius: 50%;
+      z-index: 5;
       display: flex;
       justify-content: center;
       align-items: center;
-      color: #e8c37d;
-      font-size: 32px;
-      font-weight: bold;
-      border: 2px solid #821010;
-      font-family: 'Georgia', serif;
+      color: #a5d6a7;
+      font-size: 22px;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+      transition: opacity 0.3s;
     }
-    h1 {
-      text-align: center;
-      color: #2c3e50;
-      font-size: 32px;
-      margin-top: 10px;
-      margin-bottom: 30px;
+
+    /* Animated Open States */
+    .envelope.open .top-flap {
+      transform: rotateX(180deg);
+      z-index: 1; /* Drops behind the letter */
+    }
+    .envelope.open .seal {
+      opacity: 0;
+    }
+
+    /* The Letter itself */
+    .letter {
+      position: absolute;
+      top: 8px; left: 10px; right: 10px; bottom: 8px;
+      background: #ffffff;
+      z-index: 2;
+      border-radius: 4px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      transition: transform 0.6s ease;
+      overflow: hidden; 
+    }
+
+    /* Content of the letter (hidden while inside envelope) */
+    .letter-content {
+      opacity: 0;
+      pointer-events: none;
+      padding: 30px 40px;
+    }
+
+    /* Letter peeking out animation */
+    .letter.peek {
+      transform: translateY(-90px);
+      z-index: 2;
+    }
+
+    /* Click Instruction */
+    .instructions {
+      margin-top: 30px;
+      color: #2e7d32;
+      font-weight: bold;
+      font-size: 18px;
+      text-transform: uppercase;
       letter-spacing: 1px;
     }
+
+    /* Fullscreen Expanded State */
+    .envelope-wrapper.fullscreen .instructions {
+      display: none;
+    }
+    .envelope-wrapper.fullscreen .flap,
+    .envelope-wrapper.fullscreen .seal {
+      display: none;
+    }
+    .envelope-wrapper.fullscreen .envelope {
+      background: transparent;
+      box-shadow: none;
+      width: 100%;
+      height: auto;
+      cursor: default;
+    }
+    .envelope-wrapper.fullscreen .letter {
+      position: relative;
+      transform: none;
+      width: 100%;
+      max-width: 800px;
+      height: auto;
+      margin: 0 auto;
+      overflow: visible;
+      z-index: 10;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+      border-top: 8px solid #388e3c; /* Biotech color accent */
+    }
+    .envelope-wrapper.fullscreen .letter-content {
+      opacity: 1;
+      pointer-events: auto;
+      transition: opacity 0.5s ease 0.2s;
+    }
+
+    /* Internal Letter Styling */
+    h1 {
+      text-align: center;
+      color: #1b5e20;
+      font-size: 30px;
+      margin-top: 0;
+      margin-bottom: 25px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
     p {
-      font-size: 18px;
-      line-height: 1.8;
-      color: #444;
+      font-size: 17px;
+      line-height: 1.7;
+      color: #333;
       margin-bottom: 20px;
     }
+    
     .details {
-      background: #fcfbf9;
+      background: #f1f8e9;
       padding: 25px;
-      border-left: 5px solid #6b0c0c;
-      margin-top: 30px;
+      border-left: 5px solid #4caf50;
+      margin: 30px 0;
       border-radius: 0 4px 4px 0;
     }
     .details p {
-      margin: 10px 0;
-      font-size: 17px;
+      margin: 12px 0;
+      font-size: 16px;
     }
     .details strong {
-      color: #2c3e50;
+      color: #1b5e20;
       display: inline-block;
-      width: 180px;
+      width: 120px;
     }
-    .footer {
-      text-align: center;
-      margin-top: 40px;
+
+    .thesis-title {
       font-style: italic;
-      color: #7f8c8d;
+      color: #2e7d32;
+      font-weight: 600;
+      display: block;
+      margin-top: 5px;
+      line-height: 1.5;
+    }
+
+    /* Map Styling */
+    .map-container {
+      width: 100%;
+      border-radius: 6px;
+      overflow: hidden;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      margin-bottom: 30px;
+    }
+    .map-container iframe {
+      width: 100%;
+      height: 350px;
+      border: 0;
+      display: block;
+    }
+
+    /* Attendance Form */
+    .attendance-form {
+      background: #e8f5e9;
+      padding: 25px;
+      border-radius: 6px;
+      text-align: center;
+      border: 1px solid #c8e6c9;
+    }
+    .attendance-form h3 {
+      color: #1b5e20;
+      margin-top: 0;
+      margin-bottom: 10px;
+    }
+    .attendance-form p {
+      font-size: 15px;
+      color: #444;
+      margin-bottom: 20px;
+    }
+    .form-group {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .attendance-form input {
+      padding: 12px 15px;
+      width: 100%;
+      max-width: 300px;
+      border: 1px solid #a5d6a7;
+      border-radius: 4px;
+      font-size: 16px;
+      outline: none;
+    }
+    .attendance-form input:focus {
+      border-color: #4caf50;
+      box-shadow: 0 0 5px rgba(76, 175, 80, 0.3);
+    }
+    .attendance-form button {
+      padding: 12px 25px;
+      background: #2e7d32;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .attendance-form button:hover {
+      background: #1b5e20;
+    }
+    .success-message {
+      display: none;
+      color: #2e7d32;
+      font-weight: bold;
+      margin-top: 15px;
+      font-size: 16px;
+    }
+
+    @media (max-width: 600px) {
+      .letter-content { padding: 20px; }
+      .details strong { width: 100%; display: block; margin-bottom: 5px; }
     }
   </style>
 </head>
 <body>
 
-  <div class="envelope-wrapper">
-    <div class="letter">
-      <div class="wax-seal">M</div>
+  <div class="envelope-wrapper" id="wrapper">
+    <div class="envelope" id="envelope" onclick="openEnvelope()">
+      <!-- Envelope construction -->
+      <div class="flap top-flap"></div>
+      <div class="flap right-flap"></div>
+      <div class="flap bottom-flap"></div>
+      <div class="flap left-flap"></div>
+      <div class="seal">🌿</div>
       
-      <h1>Invitation to Thesis Defense</h1>
-      
-      <p>Dear Colleague,</p>
-      <p>You are cordially invited to attend my thesis defense program. Please join me as I present the findings of my research and formally defend my thesis work.</p>
-      
-      <div class="details">
-        <p><strong>Candidate:</strong> Mehrshad Matinfar</p>
-        <p><strong>Thesis Title:</strong> [Insert Your Full Thesis Title Here]</p>
-        <p><strong>Date:</strong> [e.g., Monday, October 15, 2026]</p>
-        <p><strong>Time:</strong> [e.g., 10:00 AM - 12:00 PM]</p>
-        <p><strong>Location / Virtual Link:</strong> [Insert Room Number or Zoom/Meet Link]</p>
+      <!-- Hidden letter that will emerge -->
+      <div class="letter" id="letter">
+        <div class="letter-content">
+          <h1>🧬 Thesis Defense</h1>
+          
+          <p>Dear Colleague,</p>
+          <p>You are cordially invited to attend my thesis defense. Please join me as I present the findings of my research in biotechnology and formally defend my thesis work.</p>
+          
+          <div class="details">
+            <p><strong>Candidate:</strong> Saye Ezati Khandan</p>
+            <p><strong>Thesis Title:</strong> <span class="thesis-title">Operation of a metal-microbial desalination salt cutter with microalgae-containing biomaterials for water desalination</span></p>
+            <p><strong>Date & Time:</strong> Monday, 5 Oct 2026 at 4 PM (Tehran Time)</p>
+            <p><strong>Location:</strong> Tarbiat Modares University</p>
+          </div>
+          
+          <!-- Google Maps Embed -->
+          <div class="map-container">
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d12957.290760457272!2d51.38557793167418!3d35.718281658720194!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3f8e00d4a3d7aa5f%3A0x6fbf9d6d46bde805!2sTarbiat%20Modares%20University!5e0!3m2!1sen!2srs!4v1790873729770!5m2!1sen!2srs" allowfullscreen="" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+          </div>
+
+          <!-- Attendance Form -->
+          <div class="attendance-form">
+            <h3>Will you attend?</h3>
+            <p>Please enter your name to confirm your attendance at the defense.</p>
+            <div class="form-group">
+              <input type="text" id="guestName" placeholder="Your Full Name">
+              <button onclick="sendRSVP(event)">Send</button>
+            </div>
+            <div class="success-message" id="rsvpMessage">Thank you! Your name has been recorded.</div>
+          </div>
+
+        </div>
       </div>
-      
-      <p class="footer">I look forward to sharing this academic milestone with you.</p>
     </div>
+    
+    <div class="instructions" id="instruction-text">Click the envelope to open</div>
   </div>
 
+  <script>
+    let isOpened = false;
+
+    function openEnvelope() {
+      if (isOpened) return; // Prevent multiple clicks
+      isOpened = true;
+      
+      const env = document.getElementById('envelope');
+      const letter = document.getElementById('letter');
+      const wrapper = document.getElementById('wrapper');
+      
+      // Step 1: Open the flap
+      env.classList.add('open');
+      
+      // Step 2: Letter peeks out
+      setTimeout(() => {
+        letter.classList.add('peek');
+      }, 500);
+      
+      // Step 3: Smooth transition to full screen view
+      setTimeout(() => {
+        wrapper.style.opacity = '0'; // Brief fade to hide the layout shift
+        
+        setTimeout(() => {
+          wrapper.classList.add('fullscreen');
+          wrapper.style.opacity = '1';
+        }, 300);
+        
+      }, 1200);
+    }
+
+    function sendRSVP(e) {
+      // Prevent clicks inside the letter from bubbling up, just in case
+      e.stopPropagation(); 
+      
+      const nameInput = document.getElementById('guestName');
+      const name = nameInput.value.trim();
+      
+      if (name !== '') {
+        // [Backend logic placeholder] Send name via Email or Telegram API here
+        console.log("Attendee recorded:", name);
+        
+        // Show success message and clear input
+        document.getElementById('rsvpMessage').style.display = 'block';
+        nameInput.value = '';
+      } else {
+        alert('Please enter your name before sending.');
+      }
+    }
+  </script>
 </body>
 </html>
