@@ -27,7 +27,6 @@
       transition: opacity 0.3s ease;
     }
 
-    /* Layout shift for reading the expanded letter */
     .envelope-wrapper.fullscreen {
       align-items: flex-start;
       padding-top: 5vh;
@@ -49,7 +48,6 @@
       height: 0;
     }
 
-    /* Envelope structural flaps */
     .top-flap {
       top: 0; left: 0;
       border-left: 160px solid transparent;
@@ -81,7 +79,6 @@
       z-index: 3;
     }
 
-    /* Biotech Seal */
     .seal {
       position: absolute;
       top: 125px; left: 160px;
@@ -99,16 +96,14 @@
       transition: opacity 0.3s;
     }
 
-    /* Animated Open States */
     .envelope.open .top-flap {
       transform: rotateX(180deg);
-      z-index: 1; /* Drops behind the letter */
+      z-index: 1; 
     }
     .envelope.open .seal {
       opacity: 0;
     }
 
-    /* The Letter itself */
     .letter {
       position: absolute;
       top: 8px; left: 10px; right: 10px; bottom: 8px;
@@ -120,20 +115,17 @@
       overflow: hidden; 
     }
 
-    /* Content of the letter (hidden while inside envelope) */
     .letter-content {
       opacity: 0;
       pointer-events: none;
       padding: 30px 40px;
     }
 
-    /* Letter peeking out animation */
     .letter.peek {
       transform: translateY(-90px);
       z-index: 2;
     }
 
-    /* Click Instruction */
     .instructions {
       margin-top: 30px;
       color: #2e7d32;
@@ -143,7 +135,6 @@
       letter-spacing: 1px;
     }
 
-    /* Fullscreen Expanded State */
     .envelope-wrapper.fullscreen .instructions {
       display: none;
     }
@@ -168,7 +159,7 @@
       overflow: visible;
       z-index: 10;
       box-shadow: 0 15px 40px rgba(0,0,0,0.15);
-      border-top: 8px solid #388e3c; /* Biotech color accent */
+      border-top: 8px solid #388e3c; 
     }
     .envelope-wrapper.fullscreen .letter-content {
       opacity: 1;
@@ -176,7 +167,6 @@
       transition: opacity 0.5s ease 0.2s;
     }
 
-    /* Internal Letter Styling */
     h1 {
       text-align: center;
       color: #1b5e20;
@@ -221,7 +211,6 @@
       line-height: 1.5;
     }
 
-    /* Map Styling */
     .map-container {
       width: 100%;
       border-radius: 6px;
@@ -236,7 +225,6 @@
       display: block;
     }
 
-    /* Attendance Form */
     .attendance-form {
       background: #e8f5e9;
       padding: 25px;
@@ -287,12 +275,23 @@
     .attendance-form button:hover {
       background: #1b5e20;
     }
+    .attendance-form button:disabled {
+      background: #a5d6a7;
+      cursor: not-allowed;
+    }
     .success-message {
       display: none;
       color: #2e7d32;
       font-weight: bold;
       margin-top: 15px;
       font-size: 16px;
+    }
+    .error-message {
+      display: none;
+      color: #c62828;
+      font-weight: bold;
+      margin-top: 15px;
+      font-size: 14px;
     }
 
     @media (max-width: 600px) {
@@ -305,14 +304,12 @@
 
   <div class="envelope-wrapper" id="wrapper">
     <div class="envelope" id="envelope" onclick="openEnvelope()">
-      <!-- Envelope construction -->
       <div class="flap top-flap"></div>
       <div class="flap right-flap"></div>
       <div class="flap bottom-flap"></div>
       <div class="flap left-flap"></div>
       <div class="seal">🌿</div>
       
-      <!-- Hidden letter that will emerge -->
       <div class="letter" id="letter">
         <div class="letter-content">
           <h1>🧬 Thesis Defense</h1>
@@ -327,20 +324,19 @@
             <p><strong>Location:</strong> Tarbiat Modares University</p>
           </div>
           
-          <!-- Google Maps Embed -->
           <div class="map-container">
             <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d12957.290760457272!2d51.38557793167418!3d35.718281658720194!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3f8e00d4a3d7aa5f%3A0x6fbf9d6d46bde805!2sTarbiat%20Modares%20University!5e0!3m2!1sen!2srs!4v1790873729770!5m2!1sen!2srs" allowfullscreen="" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
           </div>
 
-          <!-- Attendance Form -->
           <div class="attendance-form">
             <h3>Will you attend?</h3>
             <p>Please enter your name to confirm your attendance at the defense.</p>
             <div class="form-group">
               <input type="text" id="guestName" placeholder="Your Full Name">
-              <button onclick="sendRSVP(event)">Send</button>
+              <button id="sendBtn" onclick="sendRSVP(event)">Send</button>
             </div>
             <div class="success-message" id="rsvpMessage">Thank you! Your name has been recorded.</div>
+            <div class="error-message" id="errorMessage">Failed to send. Please try again.</div>
           </div>
 
         </div>
@@ -354,47 +350,78 @@
     let isOpened = false;
 
     function openEnvelope() {
-      if (isOpened) return; // Prevent multiple clicks
+      if (isOpened) return; 
       isOpened = true;
       
       const env = document.getElementById('envelope');
       const letter = document.getElementById('letter');
       const wrapper = document.getElementById('wrapper');
       
-      // Step 1: Open the flap
       env.classList.add('open');
       
-      // Step 2: Letter peeks out
       setTimeout(() => {
         letter.classList.add('peek');
       }, 500);
       
-      // Step 3: Smooth transition to full screen view
       setTimeout(() => {
-        wrapper.style.opacity = '0'; // Brief fade to hide the layout shift
-        
+        wrapper.style.opacity = '0'; 
         setTimeout(() => {
           wrapper.classList.add('fullscreen');
           wrapper.style.opacity = '1';
         }, 300);
-        
       }, 1200);
     }
 
     function sendRSVP(e) {
-      // Prevent clicks inside the letter from bubbling up, just in case
       e.stopPropagation(); 
       
       const nameInput = document.getElementById('guestName');
       const name = nameInput.value.trim();
+      const btn = document.getElementById('sendBtn');
+      const successMsg = document.getElementById('rsvpMessage');
+      const errorMsg = document.getElementById('errorMessage');
+      
+      // ----------------------------------------------------
+      // TELEGRAM BOT CONFIGURATION
+      // ----------------------------------------------------
+      const botToken = '8852751179:AAE9T_YXHQsWNTDICe4xAi1U-e_7feEXGVk'; 
+      const chatId = '103694414';
       
       if (name !== '') {
-        // [Backend logic placeholder] Send name via Email or Telegram API here
-        console.log("Attendee recorded:", name);
+        // Change button state while sending
+        const originalText = btn.innerText;
+        btn.innerText = 'Sending...';
+        btn.disabled = true;
+        successMsg.style.display = 'none';
+        errorMsg.style.display = 'none';
+
+        // Format the message you will receive in Telegram
+        const text = `🎓 New RSVP for Thesis Defense:\n\nName: ${name}`;
         
-        // Show success message and clear input
-        document.getElementById('rsvpMessage').style.display = 'block';
-        nameInput.value = '';
+        // Telegram API URL
+        const url = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(text)}`;
+
+        // Send the HTTP request to Telegram
+        fetch(url)
+          .then(response => response.json())
+          .then(data => {
+            if (data.ok) {
+              successMsg.style.display = 'block';
+              nameInput.value = '';
+            } else {
+              console.error("Telegram API Error:", data);
+              errorMsg.style.display = 'block';
+            }
+          })
+          .catch(error => {
+            console.error('Fetch Error:', error);
+            errorMsg.style.display = 'block';
+          })
+          .finally(() => {
+            btn.innerText = originalText;
+            btn.disabled = false;
+          });
+
       } else {
         alert('Please enter your name before sending.');
       }
