@@ -321,7 +321,7 @@
             <p><strong>Candidate:</strong> Saye Ezati Khandan</p>
             <p><strong>Thesis Title:</strong> <span class="thesis-title">Operation of a microbial-metal desalination battery with a microalgae-containing biocathode for water desalination.</span></p>
             <p><strong>Date & Time:</strong> Monday, 5 Oct 2026 at 4 PM (Tehran Time)</p>
-            <p><strong>Location:</strong> Council Room 351, 3rd Floor, Chemical Engineering Building, Faculty of Engineering, Tarbiat Modares University, Tehran</p>
+            <p><strong>Location:</strong> Tarbiat Modares University, Faculty of Engineering, Chemical Engineering Building, 3rd Floor, Council Room 351</p>
           </div>
           
           <div class="map-container">
@@ -373,48 +373,44 @@
     }
 
     function sendRSVP(e) {
-      e.stopPropagation(); 
-      
+      e.stopPropagation();
+
       const nameInput = document.getElementById('guestName');
       const name = nameInput.value.trim();
       const btn = document.getElementById('sendBtn');
       const successMsg = document.getElementById('rsvpMessage');
       const errorMsg = document.getElementById('errorMessage');
-      
-      // ----------------------------------------------------
-      // TELEGRAM BOT CONFIGURATION
-      // ----------------------------------------------------
-      const botToken = '8852751179:AAE9T_YXHQsWNTDICe4xAi1U-e_7feEXGVk'; 
-      const chatId = '103694414';
-      
+
       if (name !== '') {
-        // Change button state while sending
         const originalText = btn.innerText;
         btn.innerText = 'Sending...';
         btn.disabled = true;
         successMsg.style.display = 'none';
         errorMsg.style.display = 'none';
 
-        // Format the message you will receive in Telegram
-        const text = `🎓 New RSVP for Thesis Defense:\n\nName: ${name}`;
-        
-        // Telegram API URL
-        const url = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(text)}`;
+        // Submit the RSVP to Formspree
+        const formData = new FormData();
+        formData.append('name', name);
 
-        // Send the HTTP request to Telegram
-        fetch(url)
-          .then(response => response.json())
-          .then(data => {
-            if (data.ok) {
+        fetch('https://formspree.io/f/xyezalan', {
+          method: 'POST',
+          body: formData,
+          headers: {
+            'Accept': 'application/json'
+          }
+        })
+          .then(response => {
+            if (response.ok) {
               successMsg.style.display = 'block';
               nameInput.value = '';
             } else {
-              console.error("Telegram API Error:", data);
-              errorMsg.style.display = 'block';
+              return response.json().then(data => {
+                throw new Error(data.error || 'Formspree submission failed.');
+              });
             }
           })
           .catch(error => {
-            console.error('Fetch Error:', error);
+            console.error('Formspree Error:', error);
             errorMsg.style.display = 'block';
           })
           .finally(() => {
